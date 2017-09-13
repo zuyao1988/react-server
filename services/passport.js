@@ -24,7 +24,8 @@ passport.use(
 	new GoogleStrategy({
 		clientID: keys.googleClientID,
 		clientSecret: keys.googleClientSecret,
-		callbackURL: '/auth/google/callback'
+		callbackURL: '/auth/google/callback',
+		proxy: true
 	}, (accessToken, refreshToken, profile, done) => {
 		User.scan({ googleId: profile.id }, function(err, existingUser) {
 			if (existingUser.count > 0) {
