@@ -1,7 +1,4 @@
 var dynamoose = require('dynamoose');
-dynamoose.AWS.config.update({
-  region: 'ap-southeast-1'
-});
 
 //var Cat = dynamoose.model('Cat', { id: Number, name: String });
 var Schema = dynamoose.Schema;
