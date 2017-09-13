@@ -3,7 +3,11 @@ const dynamoose = require('dynamoose');
 dynamoose.AWS.config.update({
   region: 'ap-southeast-1'
 });
-dynamoose.local();
+
+if (process.env.NODE_ENV !== 'production') {
+    dynamoose.local();
+}
+
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const keys = require('./config/keys');
