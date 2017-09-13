@@ -7,6 +7,29 @@ module.exports = app => {
       scope: ['profile', 'email']
     })
   );
-
   app.get('/auth/google/callback', passport.authenticate('google'));
+
+  app.get(
+    '/auth/facebook',
+    passport.authenticate('facebook', {
+      scope: ['email']
+    })
+  );
+  app.get(
+    '/auth/facebook/callback',
+    passport.authenticate('facebook', {failureRedirect: '/login'}),
+    function(req, res) {
+      //Successfully authenticate, do something.
+      res.send("Successfully login with fb!");
+    });
+
+  app.get('/api/logout', (req, res) => {
+    req.logout();
+    res.send({"data": "Logout Successfully!", "user": req.user});
+  });
+
+  app.get('/api/current_user', (req, res) => {
+    if (!req.user) res.send({"user": "No user!"});
+    res.send(req.user);
+  })
 };
