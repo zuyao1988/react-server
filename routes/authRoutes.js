@@ -7,7 +7,13 @@ module.exports = app => {
       scope: ['profile', 'email']
     })
   );
-  app.get('/auth/google/callback', passport.authenticate('google'));
+  app.get(
+    '/auth/google/callback',
+    passport.authenticate('google'),
+    (req, res) => {
+      res.redirect('/surveys');
+    }
+  );
 
   app.get(
     '/auth/facebook',
@@ -25,11 +31,15 @@ module.exports = app => {
 
   app.get('/api/logout', (req, res) => {
     req.logout();
-    res.send({"data": "Logout Successfully!", "user": req.user});
+    res.redirect('/');
+    //res.send({"data": "Logout Successfully!", "user": req.user});
   });
 
   app.get('/api/current_user', (req, res) => {
-    if (!req.user) res.send({"user": "No user!"});
+    if (!req.user) {
+      res.send("");
+      return;
+    };
     res.send(req.user);
   })
 };

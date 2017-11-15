@@ -1,3 +1,4 @@
+//sample code to show the usage of dynamoose (not in use by app)
 var dynamoose = require('dynamoose');
 
 //var Cat = dynamoose.model('Cat', { id: Number, name: String });

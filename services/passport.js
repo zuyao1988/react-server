@@ -20,29 +20,40 @@ passport.deserializeUser((id, done) => {
 	  });
 });
 
+function scanUser(googleId) {
+	console.log("googleId :", googleId);
+	return new Promise(function (fullfilled, rejected) {
+		User.scan(googleId, function(err, existingUser) {
+			if (err) {
+				console.log("err:", err);
+				return rejected( new Error("Division by zero") );
+			}
+			fullfilled(existingUser);
+		})
+	});
+}
+
 passport.use(
 	new GoogleStrategy({
 		clientID: keys.googleClientID,
 		clientSecret: keys.googleClientSecret,
 		callbackURL: '/auth/google/callback',
 		proxy: true
-	}, (accessToken, refreshToken, profile, done) => {
-		User.scan({ googleId: profile.id }, function(err, existingUser) {
-			if (existingUser.count > 0) {
+	},
+	async (accessToken, refreshToken, profile, done) => {
+			const res = await scanUser({ googleId: profile.id });
+			if (res.count > 0) {
+				//existing
 				//we alrd have a record with the given profile ID
-				var user = existingUser[0]
-				console.log('revisit user: ', user);
-				done(null, user)
-			} else {
-				//we don't have a user record with this ID, make a new record.
-				new User({ id: '' , googleId: profile.id })
-					.save()
-					.then(user => {
-						console.log('new user: ', user);
-						done(null, user)
-					});
+				var existingUser = res[0]
+				console.log('revisit user: ', existingUser);
+				return done(null, existingUser)
 			}
-		});
+
+			//we don't have a user record with this ID, make a new record.
+			const user = await new User({ id: '' , googleId: profile.id }).save()
+			console.log('new user: ', user);
+			done(null, user)
 	})
 );
 
